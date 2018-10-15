@@ -70,7 +70,7 @@ export default [
     uid: "7204336b-3f70-452e-a63b-c91fd6793e09",
     type: "FVWord",
     word: "'aldzul",
-    part_of_speech: "Verb",
+    part_of_speech: "Noun",
     categories: [
       {
         uid: "f117eb05-5d2d-45ec-ad97-68598522b2d2",

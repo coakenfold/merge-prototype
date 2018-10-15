@@ -22,36 +22,29 @@ class MergeRecords extends PureComponent {
 
     return <Record data={merged} selected={selected} setAlternate={this._setAlternate} updateFlag={updateFlag} />;
   }
-  _isInChildrensArchive = data => {
-    const property = "fv:available_in_childrens_archive";
-    const data0 = data[0][property];
-    const data1 = data[1][property];
-
-    return [data0, data1];
-  };
   _mergeRecords = () => {
     const { data } = this.props;
     const sorted = this._sortByLastEdited(data);
     const lastEdited = sorted[0];
 
-    const categories = this._returnUniqueByUidProperty(sorted, "categories");
-    const dc_contributors = this._returnUniqueValues(sorted, "dc:contributors");
+    const categories = this._generateByUid(sorted, "categories");
+    const dc_contributors = this._generateCombined(sorted, "dc:contributors");
     const dc_lastContributor = lastEdited["dc:lastContributor"];
-    const fv_definitions = this._returnUniqueDefinitions(sorted);
-    const fv_reference = this._returnEquivalentOrFirst(sorted, "fv:reference");
-    const fv_word_pronunciation = this._returnEquivalentOrFirst(sorted, "fv-word:pronunciation");
-    const fv_word_part_of_speech = this._returnEquivalentOrFirst(sorted, "fv-word:part_of_speech");
-    const fv_available_in_childrens_archive = this._isInChildrensArchive(sorted);
-    const fv_cultural_note = this._returnUniqueValues(sorted, "fv:cultural_note");
+    const fv_definitions = this._generateDefinitions(sorted);
+    const fv_reference = this._generateDouble(sorted, "fv:reference");
+    const fv_word_pronunciation = this._generateDouble(sorted, "fv-word:pronunciation");
+    const fv_word_part_of_speech = this._generateDouble(sorted, "fv-word:part_of_speech");
+    const fv_available_in_childrens_archive = this._generateChildrensArchive(sorted);
+    const fv_cultural_note = this._generateCombined(sorted, "fv:cultural_note");
     const lastModified = lastEdited.lastModified;
-    const part_of_speech = this._returnEquivalentOrFirst(sorted, "part_of_speech");
-    const related_phrases = this._returnUniqueByUidProperty(sorted, "related_phrases");
-    const related_audio = this._returnUniqueByUidProperty(sorted, "related_audio");
-    const related_pictures = this._returnUniqueByUidProperty(sorted, "related_pictures");
-    const sources = this._returnUniqueByUidProperty(sorted, "sources");
-    const type = this._returnEquivalentOrFirst(sorted, "type");
+    const part_of_speech = this._generateDouble(sorted, "part_of_speech");
+    const related_phrases = this._generateByUid(sorted, "related_phrases");
+    const related_audio = this._generateByUid(sorted, "related_audio");
+    const related_pictures = this._generateByUid(sorted, "related_pictures");
+    const sources = this._generateByUid(sorted, "sources");
+    const type = this._generateDouble(sorted, "type");
     const uid = uuid();
-    const word = this._returnEquivalentOrFirst(sorted, "word");
+    const word = this._generateDouble(sorted, "word");
 
     this.setState({
       merged: {
@@ -98,7 +91,15 @@ class MergeRecords extends PureComponent {
     });
   };
 
-  _returnEquivalentOrFirst = (data, property) => {
+  _generateChildrensArchive = data => {
+    const property = "fv:available_in_childrens_archive";
+    const data0 = data[0][property];
+    const data1 = data[1][property];
+
+    return [data0, data1];
+  };
+
+  _generateDouble = (data, property) => {
     const data0 = data[0][property];
     const data1 = data[1][property];
 
@@ -109,7 +110,7 @@ class MergeRecords extends PureComponent {
     return [data0];
   };
 
-  _returnUniqueByUidProperty = (data, property) => {
+  _generateByUid = (data, property) => {
     let flagged = false;
     const toReturn = [];
     const unique = [].concat(data[0][property]);
@@ -130,7 +131,7 @@ class MergeRecords extends PureComponent {
     return toReturn;
   };
 
-  _returnUniqueDefinitions = data => {
+  _generateDefinitions = data => {
     let flagged = false;
     const toReturn = [];
     const property = "fv:definitions";
@@ -158,7 +159,7 @@ class MergeRecords extends PureComponent {
     return toReturn;
   };
 
-  _returnUniqueValues = (data, property) => {
+  _generateCombined = (data, property) => {
     let flagged = false;
     const toReturn = [];
     const a = data[0][property];
