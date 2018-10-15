@@ -73,8 +73,8 @@ export default [
     part_of_speech: "Verb",
     categories: [
       {
-        uid: "f117eb05-5d2d-45ec-ad97-68598522b2d1",
-        "dc:title": "Speech And Language"
+        uid: "f117eb05-5d2d-45ec-ad97-68598522b2d2",
+        "dc:title": "Speech And Language 2"
       }
     ],
     sources: [

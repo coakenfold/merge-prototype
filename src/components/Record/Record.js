@@ -77,11 +77,7 @@ class Record extends PureComponent {
             </div>
             <div className="row">
               <strong>{data.categories.length > 1 ? "Categories" : "Category"}:</strong>
-              <ul>
-                {data.categories.map((item, index) => (
-                  <li key={index}>{item["dc:title"]}</li>
-                ))}
-              </ul>
+              {this._generateContent("categories")}
             </div>
             <div className="row">
               <strong>Reference:</strong>
@@ -119,15 +115,46 @@ class Record extends PureComponent {
     }
     switch (property) {
       case "categories":
-        /*
-            arrayOf(
-              shape({
-                uid: string.isRequired,
-                "dc:title": string
-              })
-            )
-            */
-        active = "categories";
+        active = (
+          <ul>
+            {data.categories[s].map((item, index) => (
+              <li key={index}>{item["dc:title"]}</li>
+            ))}
+          </ul>
+        );
+
+        if (dLength === 3) {
+          buttons = (
+            <div className="buttons">
+              <button
+                className={classNames("button", { active: s === 0 })}
+                onClick={() => {
+                  this._setAlternate(property, 0);
+                }}
+              >
+                {title1}
+              </button>
+
+              <button
+                className={classNames("button", { active: s === 1 })}
+                onClick={() => {
+                  this._setAlternate(property, 1);
+                }}
+              >
+                {title2}
+              </button>
+
+              <button
+                className={classNames("button", { active: s === 2 })}
+                onClick={() => {
+                  this._setAlternate(property, 2);
+                }}
+              >
+                {title3}
+              </button>
+            </div>
+          );
+        }
         break;
       case "sources":
         /*
@@ -156,7 +183,7 @@ class Record extends PureComponent {
           </ul>
         );
 
-        if (dLength == 3) {
+        if (dLength === 3) {
           buttons = (
             <div className="buttons">
               <button
