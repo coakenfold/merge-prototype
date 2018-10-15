@@ -17,18 +17,10 @@ class MergeRecords extends PureComponent {
     this._mergeRecords();
   }
   render() {
-    const { merged, needsReview, sorted, updateFlag } = this.state;
+    const { merged, selected, updateFlag } = this.state;
     if (!merged) return null;
 
-    return (
-      <Record
-        data={merged}
-        source={sorted}
-        needsReview={needsReview}
-        setAlternate={this._setAlternate}
-        updateFlag={updateFlag}
-      />
-    );
+    return <Record data={merged} selected={selected} setAlternate={this._setAlternate} updateFlag={updateFlag} />;
   }
   _mergeRecords = () => {
     const { data } = this.props;
@@ -55,7 +47,6 @@ class MergeRecords extends PureComponent {
     const word = this._returnEquivalentOrFirst(sorted, "word");
 
     this.setState({
-      sorted,
       merged: {
         uid,
         type,
@@ -76,6 +67,26 @@ class MergeRecords extends PureComponent {
         "dc:contributors": dc_contributors,
         "fv-word:pronunciation": fv_word_pronunciation,
         "fv-word:part_of_speech": fv_word_part_of_speech
+      },
+      selected: {
+        type: 0,
+        word: 0,
+        part_of_speech: 0,
+        categories: 0,
+        sources: 0,
+        related_phrases: 0,
+        related_audio: 0,
+        related_pictures: 0,
+        lastModified: 0,
+        "fv:reference": 0,
+        "fv:definitions": 0,
+        "fv:cultural_note": 0,
+        "fv:available_in_childrens_archive": 0,
+        "dc:creator": 0,
+        "dc:lastContributor": 0,
+        "dc:contributors": 0,
+        "fv-word:pronunciation": 0,
+        "fv-word:part_of_speech": 0
       }
     });
   };
@@ -98,43 +109,29 @@ class MergeRecords extends PureComponent {
   _returnEquivalentOrFirst = (data, property) => {
     const data0 = data[0][property];
     const data1 = data[1][property];
+
     if (data0 !== data1) {
-      // Different, make a note
-      this._logDifference(property);
+      return [data0, data1];
     }
 
-    return data0;
-  };
-
-  _logDifference = property => {
-    const { needsReview } = this.state;
-    needsReview.push(property);
-    this.setState({ needsReview });
+    return [data0];
   };
 
   _returnUniqueByUidProperty = (data, property) => {
-    let flagged = false;
     const unique = [].concat(data[0][property]);
     const uniqueUids = unique.map(obj => {
       return obj.uid;
     });
     data[1][property].forEach(obj => {
       if (uniqueUids.indexOf(obj.uid) === -1) {
-        flagged = true;
         unique.push(obj);
       }
     });
-
-    if (flagged) {
-      // Different, make a note
-      this._logDifference(property);
-    }
 
     return unique;
   };
 
   _returnUniqueDefinitions = data => {
-    let flagged = false;
     const property = "fv:definitions";
     const data0 = data[0][property];
     const data1 = data[1][property];
@@ -147,45 +144,30 @@ class MergeRecords extends PureComponent {
     data1.forEach(obj => {
       const str = `${obj.translation} ${obj.language}`;
       if (uniqueMap.indexOf(str) === -1) {
-        if (!flagged) {
-          flagged = true;
-        }
         unique.push(obj);
       }
     });
-
-    if (flagged) {
-      // Different, make a note
-      this._logDifference(property);
-    }
 
     return unique;
   };
 
   _returnUniqueValues = (data, property) => {
-    let flagged = false;
     const a = data[0][property];
     const b = data[1][property];
     const ab = [].concat(a);
     b.forEach(entry => {
       if (ab.indexOf(entry) === -1) {
-        flagged = true;
         ab.push(entry);
       }
     });
-
-    if (flagged) {
-      // Different, make a note
-      this._logDifference(property);
-    }
 
     return ab;
   };
 
   _setAlternate = (property, data) => {
-    const { merged } = this.state;
-    merged[property] = data;
-    this.setState({ merged, updateFlag: uuid() });
+    const { selected } = this.state;
+    selected[property] = data;
+    this.setState({ selected, updateFlag: uuid() });
   };
 
   _isInChildrensArchive = data => {
@@ -193,12 +175,7 @@ class MergeRecords extends PureComponent {
     const data0 = data[0][property];
     const data1 = data[1][property];
 
-    if (data0 !== data1) {
-      // Different, make a note
-      this._logDifference(property);
-    }
-
-    return data0 || data1;
+    return [data0, data1];
   };
 }
 

@@ -2,19 +2,20 @@ import React, { PureComponent } from "react";
 import { func } from "prop-types";
 import "./Record.css";
 import dataPropType from "../dataPropType";
+import classNames from "classnames";
 
 class Record extends PureComponent {
   static propTypes = {
     setAlternate: func,
     data: dataPropType
   };
-  componentDidMount() {}
   render() {
     return <div className="Record">{this._generateEntry()}</div>;
   }
   _generateEntry = () => {
-    const { data, source } = this.props;
-    if (!data || !source) return null;
+    const { data } = this.props;
+    if (!data) return null;
+
     return (
       <div>
         <h1>{data.word}</h1>
@@ -23,16 +24,17 @@ class Record extends PureComponent {
             {data.related_audio.map((item, index) => (
               <div key={index}>
                 <audio src={item.path} preload="none" controls />
-                {source[index]["fv:available_in_childrens_archive"] ? <div>Child focused</div> : null}
+                {data["fv:available_in_childrens_archive"][index] ? <div>Child focused</div> : null}
               </div>
             ))}
           </div>
           <div>
-            <strong>Pronunciation:</strong> {data["fv-word:pronunciation"]}
-            {this._generateNeedsReview("fv-word:pronunciation")}
+            <strong>Pronunciation:</strong>
+            {this._generateContent("fv-word:pronunciation")}
           </div>
           <div>
-            <strong>Part of speech:</strong> {data.part_of_speech}
+            <strong>Part of speech:</strong>
+            {this._generateContent("part_of_speech")}
           </div>
           <div>
             <strong>{data["fv:definitions"].length > 1 ? "Definitions" : "Definition"}:</strong>
@@ -93,24 +95,40 @@ class Record extends PureComponent {
           </div>
           <div>
             <strong>Reference:</strong>
-            {data["fv:reference"]}
+            {this._generateContent("fv:reference")}
           </div>
         </aside>
       </div>
     );
   };
-  _generateNeedsReview = property => {
-    const { data, source, needsReview } = this.props;
-    if (!data || !source || !needsReview) {
+  _generateContent = property => {
+    const { data, selected } = this.props;
+    if (!data) {
       return null;
     }
-    let a = "a";
-    let b = "b";
-    const flagged = needsReview.indexOf(property);
-    if (flagged !== -1) {
-      switch (property) {
-        case "categories":
-          /*
+    let active = null;
+    let buttons = null;
+    let title1 = "";
+    let title2 = "";
+    let title3 = "";
+
+    const s = selected[property];
+    const d = data[property];
+    const dLength = d.length;
+
+    if (dLength === 2) {
+      title1 = "Version 1";
+      title2 = "Version 2";
+    }
+
+    if (dLength === 3) {
+      title1 = "Combined";
+      title2 = "Version 1";
+      title3 = "Version 2";
+    }
+    switch (property) {
+      case "categories":
+        /*
             arrayOf(
               shape({
                 uid: string.isRequired,
@@ -118,10 +136,10 @@ class Record extends PureComponent {
               })
             )
             */
-          a = "categories";
-          break;
-        case "sources":
-          /*
+        active = "categories";
+        break;
+      case "sources":
+        /*
             arrayOf(
               shape({
                 uid: string.isRequired,
@@ -129,10 +147,10 @@ class Record extends PureComponent {
               })
             )
             */
-          a = "sources";
-          break;
-        case "related_phrases":
-          /*
+        active = "sources";
+        break;
+      case "related_phrases":
+        /*
             arrayOf(
               shape({
                 uid: string.isRequired,
@@ -147,10 +165,10 @@ class Record extends PureComponent {
               })
             )
             */
-          a = "related_phrases";
-          break;
-        case "related_audio":
-          /*
+        active = "related_phrases";
+        break;
+      case "related_audio":
+        /*
             arrayOf(
               shape({
                 uid: string.isRequired,
@@ -162,10 +180,10 @@ class Record extends PureComponent {
               })
             )
             */
-          a = "related_audio";
-          break;
-        case "related_pictures":
-          /*
+        active = "related_audio";
+        break;
+      case "related_pictures":
+        /*
             arrayOf(
               shape({
                 uid: string.isRequired,
@@ -177,10 +195,10 @@ class Record extends PureComponent {
               })
             )
             */
-          a = "related_pictures";
-          break;
-        case "fv:definitions":
-          /*
+        active = "related_pictures";
+        break;
+      case "fv:definitions":
+        /*
             arrayOf(
               shape({
                 translation: string,
@@ -188,46 +206,85 @@ class Record extends PureComponent {
               })
             )
             */
-          a = "fv:definitions";
-          break;
-        case "fv:cultural_note":
-          // arrayOf(string)
-          a = "fv:cultural_note";
-          break;
-        case "fv:available_in_childrens_archive":
-          // noop
-          break;
-        case "dc:contributors":
-          // noop
-          break;
-        default:
-          // should be a string
-          a = (
-            <div
-              onClick={() => {
-                this._setAlternate(property, source[0][property]);
-              }}
-            >
-              {source[0][property]}
+        active = "fv:definitions";
+        break;
+      case "fv:cultural_note":
+        // arrayOf(string)
+        active = "fv:cultural_note";
+        break;
+      case "fv:available_in_childrens_archive":
+        // noop
+        break;
+      case "dc:contributors":
+        // noop
+        break;
+      default:
+        // should be a string
+        active = <div>{d[s]}</div>;
+
+        if (dLength === 2) {
+          buttons = (
+            <div className="buttons">
+              <button
+                className={classNames("button", { active: s === 0 })}
+                onClick={() => {
+                  this._setAlternate(property, 0);
+                }}
+              >
+                {title1}
+              </button>
+
+              <button
+                className={classNames("button", { active: s === 1 })}
+                onClick={() => {
+                  this._setAlternate(property, 1);
+                }}
+              >
+                {title2}
+              </button>
             </div>
           );
-          b = (
-            <div
-              onClick={() => {
-                this._setAlternate(property, source[1][property]);
-              }}
-            >
-              {source[1][property]}
+        }
+        if (dLength === 3) {
+          buttons = (
+            <div className="buttons">
+              <button
+                className={classNames("button", { active: s === 0 })}
+                onClick={() => {
+                  this._setAlternate(property, 0);
+                }}
+              >
+                {title1}
+              </button>
+
+              <button
+                className={classNames("button", { active: s === 1 })}
+                onClick={() => {
+                  this._setAlternate(property, 1);
+                }}
+              >
+                {title2}
+              </button>
+
+              <button
+                className={classNames("button", { active: s === 2 })}
+                onClick={() => {
+                  this._setAlternate(property, 2);
+                }}
+              >
+                {title3}
+              </button>
             </div>
           );
-          break;
-      }
-      return (
-        <div>
-          {a} or {b}
-        </div>
-      );
+        }
+        break;
     }
+    return (
+      <div className={classNames({ needsReview: dLength > 1 })}>
+        {buttons}
+        {active}
+      </div>
+    );
   };
   _setAlternate = (property, data) => {
     this.props.setAlternate(property, data);

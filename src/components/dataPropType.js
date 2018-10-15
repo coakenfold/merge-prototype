@@ -1,9 +1,9 @@
 import { array, arrayOf, bool, shape, string } from "prop-types";
 const dataPropType = shape({
   uid: string.isRequired,
-  type: string,
-  word: string,
-  part_of_speech: string,
+  type: arrayOf(string),
+  word: arrayOf(string),
+  part_of_speech: arrayOf(string),
   categories: arrayOf(
     shape({
       uid: string.isRequired,
@@ -49,8 +49,8 @@ const dataPropType = shape({
       "dc:description": string
     })
   ),
-  lastModified: string,
-  "fv:reference": string,
+  lastModified: arrayOf(string),
+  "fv:reference": arrayOf(string),
   "fv:definitions": arrayOf(
     shape({
       translation: string,
@@ -58,12 +58,12 @@ const dataPropType = shape({
     })
   ),
   "fv:cultural_note": arrayOf(string),
-  "fv:available_in_childrens_archive": bool,
-  "dc:creator": string,
-  "dc:lastContributor": string,
+  "fv:available_in_childrens_archive": arrayOf(bool),
+  "dc:creator": arrayOf(string),
+  "dc:lastContributor": arrayOf(string),
   "dc:contributors": arrayOf(string),
-  "fv-word:pronunciation": string,
-  "fv-word:part_of_speech": string
+  "fv-word:pronunciation": arrayOf(string),
+  "fv-word:part_of_speech": arrayOf(string)
 });
 
 export default dataPropType;
