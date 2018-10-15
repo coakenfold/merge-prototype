@@ -22,6 +22,13 @@ class MergeRecords extends PureComponent {
 
     return <Record data={merged} selected={selected} setAlternate={this._setAlternate} updateFlag={updateFlag} />;
   }
+  _isInChildrensArchive = data => {
+    const property = "fv:available_in_childrens_archive";
+    const data0 = data[0][property];
+    const data1 = data[1][property];
+
+    return [data0, data1];
+  };
   _mergeRecords = () => {
     const { data } = this.props;
     const sorted = this._sortByLastEdited(data);
@@ -91,21 +98,6 @@ class MergeRecords extends PureComponent {
     });
   };
 
-  _sortByLastEdited = data => {
-    const sorting = [].concat(data);
-    return sorting.sort((a, b) => {
-      const aDate = new Date(a.lastModified);
-      const bDate = new Date(b.lastModified);
-      if (aDate > bDate) {
-        return -1;
-      }
-      if (aDate < bDate) {
-        return 1;
-      }
-      return 0;
-    });
-  };
-
   _returnEquivalentOrFirst = (data, property) => {
     const data0 = data[0][property];
     const data1 = data[1][property];
@@ -163,19 +155,25 @@ class MergeRecords extends PureComponent {
 
     return ab;
   };
+  _sortByLastEdited = data => {
+    const sorting = [].concat(data);
+    return sorting.sort((a, b) => {
+      const aDate = new Date(a.lastModified);
+      const bDate = new Date(b.lastModified);
+      if (aDate > bDate) {
+        return -1;
+      }
+      if (aDate < bDate) {
+        return 1;
+      }
+      return 0;
+    });
+  };
 
   _setAlternate = (property, data) => {
     const { selected } = this.state;
     selected[property] = data;
     this.setState({ selected, updateFlag: uuid() });
-  };
-
-  _isInChildrensArchive = data => {
-    const property = "fv:available_in_childrens_archive";
-    const data0 = data[0][property];
-    const data1 = data[1][property];
-
-    return [data0, data1];
   };
 }
 
