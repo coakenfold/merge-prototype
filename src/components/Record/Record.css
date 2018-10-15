@@ -1,16 +1,21 @@
-.record {
-    flex-grow: 1;
-    margin: 10px;
-    min-height: 100px;
+.Record {
+    margin: 20px;
+}
+.recordGroup {
     display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
+}
+.groupPrimary {
+    width: 50%;
+    margin-right: 20px;
+}
+.row {
+    margin-bottom: 20px;
 }
 .needsReview {
     background-color: yellow;
     display: flex;
     flex-direction: column;
+    padding: 10px;
 }
 .buttons {
     display: flex;

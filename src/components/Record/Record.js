@@ -19,85 +19,87 @@ class Record extends PureComponent {
     return (
       <div>
         <h1>{data.word}</h1>
-        <div>
-          <div>
-            {data.related_audio.map((item, index) => (
-              <div key={index}>
-                <audio src={item.path} preload="none" controls />
-                {data["fv:available_in_childrens_archive"][index] ? <div>Child focused</div> : null}
-              </div>
-            ))}
-          </div>
-          <div>
-            <strong>Pronunciation:</strong>
-            {this._generateContent("fv-word:pronunciation")}
-          </div>
-          <div>
-            <strong>Part of speech:</strong>
-            {this._generateContent("part_of_speech")}
-          </div>
-          <div>
-            <strong>{data["fv:definitions"].length > 1 ? "Definitions" : "Definition"}:</strong>
-            <ul>
-              {data["fv:definitions"].map((item, index) => (
-                <li key={index}>{item.translation}</li>
+        <div className="recordGroup">
+          <div className="groupPrimary">
+            <div className="row">
+              {data.related_audio.map((item, index) => (
+                <div key={index}>
+                  <audio src={item.path} preload="none" controls />
+                  {data["fv:available_in_childrens_archive"][index] ? <div>Child focused</div> : null}
+                </div>
               ))}
-            </ul>
+            </div>
+            <div className="row">
+              <strong>Pronunciation:</strong>
+              {this._generateContent("fv-word:pronunciation")}
+            </div>
+            <div className="row">
+              <strong>Part of speech:</strong>
+              {this._generateContent("part_of_speech")}
+            </div>
+            <div className="row">
+              <strong>{data["fv:definitions"].length > 1 ? "Definitions" : "Definition"}:</strong>
+              <ul>
+                {data["fv:definitions"].map((item, index) => (
+                  <li key={index}>{item.translation}</li>
+                ))}
+              </ul>
+            </div>
+            <div className="row">
+              <strong>{data.related_phrases.length > 1 ? "Related phrases" : "Related phrase"}:</strong>
+              <ul>
+                {data.related_phrases.map((item, index) => (
+                  <li key={index}>
+                    <strong>{item.phrase}</strong>
+                    <ul>
+                      {item["fv:definitions"].map((subitem, subindex) => (
+                        <li key={subindex}>{subitem.translation}</li>
+                      ))}
+                    </ul>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div className="row">
+              <strong>{data["fv:cultural_note"].length > 1 ? "Cultural notes" : "Cultural note"}:</strong>
+              <ul>
+                {data["fv:cultural_note"].map((item, index) => (
+                  <li key={index}>{item}</li>
+                ))}
+              </ul>
+            </div>
+            <div className="row">
+              <strong>{data.sources.length > 1 ? "Sources" : "Source"}:</strong>
+              <ul>
+                {data.sources.map((item, index) => (
+                  <li key={index}>{item["dc:title"]}</li>
+                ))}
+              </ul>
+            </div>
           </div>
-          <div>
-            <strong>{data.related_phrases.length > 1 ? "Related phrases" : "Related phrase"}:</strong>
-            <ul>
-              {data.related_phrases.map((item, index) => (
-                <li key={index}>
-                  <strong>{item.phrase}</strong>
-                  <ul>
-                    {item["fv:definitions"].map((subitem, subindex) => (
-                      <li key={subindex}>{subitem.translation}</li>
-                    ))}
-                  </ul>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div>
-            <strong>{data["fv:cultural_note"].length > 1 ? "Cultural notes" : "Cultural note"}:</strong>
-            <ul>
-              {data["fv:cultural_note"].map((item, index) => (
-                <li key={index}>{item}</li>
-              ))}
-            </ul>
-          </div>
-          <div>
-            <strong>{data.sources.length > 1 ? "Sources" : "Source"}:</strong>
-            <ul>
-              {data.sources.map((item, index) => (
-                <li key={index}>{item["dc:title"]}</li>
-              ))}
-            </ul>
-          </div>
+          <aside>
+            <div className="row">
+              <strong>{data["dc:contributors"].length > 1 ? "Contributors" : "Contributor"}:</strong>
+              <ul>
+                {data["dc:contributors"].map((item, index) => (
+                  <li key={index}>{item}</li>
+                ))}
+              </ul>
+            </div>
+            <div className="row">
+              <strong>{data.categories.length > 1 ? "Categories" : "Category"}:</strong>
+              <ul>
+                {data.categories.map((item, index) => (
+                  <li key={index}>{item["dc:title"]}</li>
+                ))}
+              </ul>
+            </div>
+            <div className="row">
+              <strong>Reference:</strong>
+              {this._generateContent("fv:reference")}
+            </div>
+          </aside>
         </div>
-        <aside>
-          <div>
-            <strong>{data["dc:contributors"].length > 1 ? "Contributors" : "Contributor"}:</strong>
-            <ul>
-              {data["dc:contributors"].map((item, index) => (
-                <li key={index}>{item}</li>
-              ))}
-            </ul>
-          </div>
-          <div>
-            <strong>{data.categories.length > 1 ? "Categories" : "Category"}:</strong>
-            <ul>
-              {data.categories.map((item, index) => (
-                <li key={index}>{item["dc:title"]}</li>
-              ))}
-            </ul>
-          </div>
-          <div>
-            <strong>Reference:</strong>
-            {this._generateContent("fv:reference")}
-          </div>
-        </aside>
       </div>
     );
   };
