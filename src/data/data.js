@@ -129,7 +129,7 @@ export default [
     "dc:creator": "R. Smith",
     "dc:lastContributor": "R. Smith",
     "dc:contributors": ["R. Smith"],
-    "fv-word:pronunciation": "'al•dzul",
+    "fv-word:pronunciation": "'al• dzul",
     "fv-word:part_of_speech": "verb"
   }
 ];

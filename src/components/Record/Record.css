@@ -1,0 +1,22 @@
+.record {
+    flex-grow: 1;
+    margin: 10px;
+    min-height: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+.recordConfirmChanges {
+    display: flex;
+    width: 100%;
+}
+.recordMerged {
+    background: green;
+}
+.recordOriginal1 {
+    background: yellow;
+}
+.recordOriginal2 {
+    background: yellow;
+}
