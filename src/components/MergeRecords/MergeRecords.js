@@ -131,6 +131,8 @@ class MergeRecords extends PureComponent {
   };
 
   _returnUniqueDefinitions = data => {
+    let flagged = false;
+    const toReturn = [];
     const property = "fv:definitions";
     const data0 = data[0][property];
     const data1 = data[1][property];
@@ -143,24 +145,37 @@ class MergeRecords extends PureComponent {
     data1.forEach(obj => {
       const str = `${obj.translation} ${obj.language}`;
       if (uniqueMap.indexOf(str) === -1) {
+        flagged = true;
         unique.push(obj);
       }
     });
 
-    return unique;
+    toReturn.push(unique);
+    if (flagged) {
+      toReturn.push(data0);
+      toReturn.push(data1);
+    }
+    return toReturn;
   };
 
   _returnUniqueValues = (data, property) => {
+    let flagged = false;
+    const toReturn = [];
     const a = data[0][property];
     const b = data[1][property];
     const ab = [].concat(a);
     b.forEach(entry => {
       if (ab.indexOf(entry) === -1) {
+        flagged = true;
         ab.push(entry);
       }
     });
-
-    return ab;
+    toReturn.push(ab);
+    if (flagged) {
+      toReturn.push(a);
+      toReturn.push(b);
+    }
+    return toReturn;
   };
   _sortByLastEdited = data => {
     const sorting = [].concat(data);

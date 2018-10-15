@@ -124,7 +124,7 @@ export default [
         language: "english"
       }
     ],
-    "fv:cultural_note": ["verb root -dzul"],
+    "fv:cultural_note": ["verb root -dzul", "new entry"],
     "fv:available_in_childrens_archive": true,
     "dc:creator": "R. Smith",
     "dc:lastContributor": "R. Smith",

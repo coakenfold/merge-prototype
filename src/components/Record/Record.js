@@ -21,14 +21,7 @@ class Record extends PureComponent {
         <h1>{data.word}</h1>
         <div className="recordGroup">
           <div className="groupPrimary">
-            <div className="row">
-              {data.related_audio.map((item, index) => (
-                <div key={index}>
-                  <audio src={item.path} preload="none" controls />
-                  {data["fv:available_in_childrens_archive"][index] ? <div>Child focused</div> : null}
-                </div>
-              ))}
-            </div>
+            <div className="row">{this._generateContent("related_audio")}</div>
             <div className="row">
               <strong>Pronunciation:</strong>
               {this._generateContent("fv-word:pronunciation")}
@@ -39,11 +32,7 @@ class Record extends PureComponent {
             </div>
             <div className="row">
               <strong>{data["fv:definitions"].length > 1 ? "Definitions" : "Definition"}:</strong>
-              <ul>
-                {data["fv:definitions"].map((item, index) => (
-                  <li key={index}>{item.translation}</li>
-                ))}
-              </ul>
+              {this._generateContent("fv:definitions")}
             </div>
             <div className="row">
               <strong>{data.related_phrases.length > 1 ? "Related phrases" : "Related phrase"}:</strong>
@@ -51,29 +40,17 @@ class Record extends PureComponent {
             </div>
             <div className="row">
               <strong>{data["fv:cultural_note"].length > 1 ? "Cultural notes" : "Cultural note"}:</strong>
-              <ul>
-                {data["fv:cultural_note"].map((item, index) => (
-                  <li key={index}>{item}</li>
-                ))}
-              </ul>
+              {this._generateContent("fv:cultural_note")}
             </div>
             <div className="row">
               <strong>{data.sources.length > 1 ? "Sources" : "Source"}:</strong>
-              <ul>
-                {data.sources.map((item, index) => (
-                  <li key={index}>{item["dc:title"]}</li>
-                ))}
-              </ul>
+              {this._generateContent("sources")}
             </div>
           </div>
           <aside>
             <div className="row">
               <strong>{data["dc:contributors"].length > 1 ? "Contributors" : "Contributor"}:</strong>
-              <ul>
-                {data["dc:contributors"].map((item, index) => (
-                  <li key={index}>{item}</li>
-                ))}
-              </ul>
+              {this._generateContent("dc:contributors")}
             </div>
             <div className="row">
               <strong>{data.categories.length > 1 ? "Categories" : "Category"}:</strong>
@@ -157,15 +134,46 @@ class Record extends PureComponent {
         }
         break;
       case "sources":
-        /*
-            arrayOf(
-              shape({
-                uid: string.isRequired,
-                "dc:title": string
-              })
-            )
-            */
-        active = "sources";
+        active = (
+          <ul>
+            {data.sources[s].map((item, index) => (
+              <li key={index}>{item["dc:title"]}</li>
+            ))}
+          </ul>
+        );
+
+        if (dLength === 3) {
+          buttons = (
+            <div className="buttons">
+              <button
+                className={classNames("button", { active: s === 0 })}
+                onClick={() => {
+                  this._setAlternate(property, 0);
+                }}
+              >
+                {title1}
+              </button>
+
+              <button
+                className={classNames("button", { active: s === 1 })}
+                onClick={() => {
+                  this._setAlternate(property, 1);
+                }}
+              >
+                {title2}
+              </button>
+
+              <button
+                className={classNames("button", { active: s === 2 })}
+                onClick={() => {
+                  this._setAlternate(property, 2);
+                }}
+              >
+                {title3}
+              </button>
+            </div>
+          );
+        }
         break;
       case "related_phrases":
         active = (
@@ -217,55 +225,148 @@ class Record extends PureComponent {
         }
         break;
       case "related_audio":
-        /*
-            arrayOf(
-              shape({
-                uid: string.isRequired,
-                name: string,
-                "mime-type": string,
-                path: string,
-                "dc:title": string,
-                "dc:description": string
-              })
-            )
-            */
-        active = "related_audio";
+        active = (
+          <div>
+            {data.related_audio[s].map((item, index) => (
+              <div key={index}>
+                <audio src={item.path} preload="none" controls />
+                {data["fv:available_in_childrens_archive"][index] ? <div>Child focused</div> : null}
+              </div>
+            ))}
+          </div>
+        );
         break;
       case "related_pictures":
-        /*
-            arrayOf(
-              shape({
-                uid: string.isRequired,
-                name: string,
-                "mime-type": string,
-                path: string,
-                "dc:title": string,
-                "dc:description": string
-              })
-            )
-            */
-        active = "related_pictures";
+        // TODO: not supported in prototype
         break;
       case "fv:definitions":
-        /*
-            arrayOf(
-              shape({
-                translation: string,
-                language: string
-              })
-            )
-            */
-        active = "fv:definitions";
+        active = (
+          <ul>
+            {data["fv:definitions"][s].map((item, index) => (
+              <li key={index}>{item.translation}</li>
+            ))}
+          </ul>
+        );
+
+        if (dLength === 3) {
+          buttons = (
+            <div className="buttons">
+              <button
+                className={classNames("button", { active: s === 0 })}
+                onClick={() => {
+                  this._setAlternate(property, 0);
+                }}
+              >
+                {title1}
+              </button>
+
+              <button
+                className={classNames("button", { active: s === 1 })}
+                onClick={() => {
+                  this._setAlternate(property, 1);
+                }}
+              >
+                {title2}
+              </button>
+
+              <button
+                className={classNames("button", { active: s === 2 })}
+                onClick={() => {
+                  this._setAlternate(property, 2);
+                }}
+              >
+                {title3}
+              </button>
+            </div>
+          );
+        }
         break;
       case "fv:cultural_note":
-        // arrayOf(string)
-        active = "fv:cultural_note";
+        active = (
+          <ul>
+            {data["fv:cultural_note"][s].map((item, index) => (
+              <li key={index}>{item}</li>
+            ))}
+          </ul>
+        );
+
+        if (dLength === 3) {
+          buttons = (
+            <div className="buttons">
+              <button
+                className={classNames("button", { active: s === 0 })}
+                onClick={() => {
+                  this._setAlternate(property, 0);
+                }}
+              >
+                {title1}
+              </button>
+
+              <button
+                className={classNames("button", { active: s === 1 })}
+                onClick={() => {
+                  this._setAlternate(property, 1);
+                }}
+              >
+                {title2}
+              </button>
+
+              <button
+                className={classNames("button", { active: s === 2 })}
+                onClick={() => {
+                  this._setAlternate(property, 2);
+                }}
+              >
+                {title3}
+              </button>
+            </div>
+          );
+        }
         break;
       case "fv:available_in_childrens_archive":
         // noop
         break;
       case "dc:contributors":
-        // noop
+        active = (
+          <ul>
+            {data["dc:contributors"][s].map((item, index) => (
+              <li key={index}>{item}</li>
+            ))}
+          </ul>
+        );
+
+        if (dLength === 3) {
+          buttons = (
+            <div className="buttons">
+              <button
+                className={classNames("button", { active: s === 0 })}
+                onClick={() => {
+                  this._setAlternate(property, 0);
+                }}
+              >
+                {title1}
+              </button>
+
+              <button
+                className={classNames("button", { active: s === 1 })}
+                onClick={() => {
+                  this._setAlternate(property, 1);
+                }}
+              >
+                {title2}
+              </button>
+
+              <button
+                className={classNames("button", { active: s === 2 })}
+                onClick={() => {
+                  this._setAlternate(property, 2);
+                }}
+              >
+                {title3}
+              </button>
+            </div>
+          );
+        }
         break;
       default:
         // should be a string
