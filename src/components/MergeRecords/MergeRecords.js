@@ -110,17 +110,24 @@ class MergeRecords extends PureComponent {
   };
 
   _returnUniqueByUidProperty = (data, property) => {
+    let flagged = false;
+    const toReturn = [];
     const unique = [].concat(data[0][property]);
     const uniqueUids = unique.map(obj => {
       return obj.uid;
     });
     data[1][property].forEach(obj => {
       if (uniqueUids.indexOf(obj.uid) === -1) {
+        flagged = true;
         unique.push(obj);
       }
     });
-
-    return unique;
+    toReturn.push(unique);
+    if (flagged) {
+      toReturn.push(data[0][property]);
+      toReturn.push(data[1][property]);
+    }
+    return toReturn;
   };
 
   _returnUniqueDefinitions = data => {

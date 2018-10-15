@@ -47,18 +47,7 @@ class Record extends PureComponent {
             </div>
             <div className="row">
               <strong>{data.related_phrases.length > 1 ? "Related phrases" : "Related phrase"}:</strong>
-              <ul>
-                {data.related_phrases.map((item, index) => (
-                  <li key={index}>
-                    <strong>{item.phrase}</strong>
-                    <ul>
-                      {item["fv:definitions"].map((subitem, subindex) => (
-                        <li key={subindex}>{subitem.translation}</li>
-                      ))}
-                    </ul>
-                  </li>
-                ))}
-              </ul>
+              {this._generateContent("related_phrases")}
             </div>
             <div className="row">
               <strong>{data["fv:cultural_note"].length > 1 ? "Cultural notes" : "Cultural note"}:</strong>
@@ -152,22 +141,53 @@ class Record extends PureComponent {
         active = "sources";
         break;
       case "related_phrases":
-        /*
-            arrayOf(
-              shape({
-                uid: string.isRequired,
-                "fv:definitions": arrayOf(
-                  shape({
-                    language: string,
-                    translation: string
-                  })
-                ),
-                "fv:literal_translation": array,
-                phrase: string
-              })
-            )
-            */
-        active = "related_phrases";
+        active = (
+          <ul>
+            {data.related_phrases[s].map((item, index) => (
+              <li key={index}>
+                <strong>{item.phrase}</strong>
+                <ul>
+                  {item["fv:definitions"].map((subitem, subindex) => (
+                    <li key={subindex}>{subitem.translation}</li>
+                  ))}
+                </ul>
+              </li>
+            ))}
+          </ul>
+        );
+
+        if (dLength == 3) {
+          buttons = (
+            <div className="buttons">
+              <button
+                className={classNames("button", { active: s === 0 })}
+                onClick={() => {
+                  this._setAlternate(property, 0);
+                }}
+              >
+                {title1}
+              </button>
+
+              <button
+                className={classNames("button", { active: s === 1 })}
+                onClick={() => {
+                  this._setAlternate(property, 1);
+                }}
+              >
+                {title2}
+              </button>
+
+              <button
+                className={classNames("button", { active: s === 2 })}
+                onClick={() => {
+                  this._setAlternate(property, 2);
+                }}
+              >
+                {title3}
+              </button>
+            </div>
+          );
+        }
         break;
       case "related_audio":
         /*
