@@ -1,0 +1,33 @@
+/* B
+==================== */
+.btnMerge {
+    border: none;
+    border-radius: 10px;
+    font-size: inherit;
+    margin: 0;
+    background-color: #22ddfd;
+    padding: 10px;
+}
+/* M
+==================== */
+.mergeGroup {
+ padding: 10px;
+ background-color: #eaeaea;
+}
+/* R
+==================== */
+.Record {
+    margin: 20px;
+}
+.recordGroup {
+    display: flex;
+}
+.row {
+    margin-bottom: 20px;
+}
+/* G
+==================== */
+.groupPrimary {
+    width: 50%;
+    margin-right: 20px;
+}

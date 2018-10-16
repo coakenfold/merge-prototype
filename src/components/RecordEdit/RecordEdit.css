@@ -1,40 +1,36 @@
-/* A
-==================== */
-.active {
-    text-decoration: underline;
-}
 /* B
 ==================== */
-.buttons {
-    display: flex;
-}
-.button {
+.btnMergeUndo {
     border: none;
+    border-radius: 10px;
+    font-size: inherit;
     margin: 0;
-    background-color: inherit;
-}
-/* R
-==================== */
-.Record {
-    margin: 20px;
-}
-.recordGroup {
-    display: flex;
-}
-.row {
-    margin-bottom: 20px;
-}
-/* G
-==================== */
-.groupPrimary {
-    width: 50%;
-    margin-right: 20px;
-}
+    background-color: #22ddfd;
+    padding: 10px;
+  }
 /* N
 ==================== */
-.needsReview {
+.review {
     background-color: yellow;
     display: flex;
     flex-direction: column;
+    padding: 0;
+}
+.reviewButtons {
+    display: flex;
+    background-color: #fff;
+}
+.reviewButton {
+    border: none;
+    margin: 0;
+    background-color: #fff;
+    padding: 10px;
+    outline: none;
+}
+.reviewButton.active {
+    background-color: yellow;
+    text-decoration: underline;
+}
+.reviewContent {
     padding: 10px;
 }

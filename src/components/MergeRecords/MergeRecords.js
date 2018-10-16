@@ -1,7 +1,6 @@
 import React, { PureComponent } from "react";
 import uuid from "uuid/v4";
-import { arrayOf } from "prop-types";
-import dataPropType from "../dataPropType";
+import dataPropType from "./dataPropType";
 import RecordEdit from "../RecordEdit/RecordEdit";
 import "./MergeRecords.css";
 
@@ -31,7 +30,7 @@ class MergeRecords extends PureComponent {
     forceUpdate: null
   };
   static propTypes = {
-    data: arrayOf(dataPropType)
+    data: dataPropType
   };
   componentDidMount() {
     this._mergeRecords();
@@ -40,7 +39,15 @@ class MergeRecords extends PureComponent {
     const { merged, selected, forceUpdate } = this.state;
     if (!merged) return null;
 
-    return <RecordEdit data={merged} selected={selected} setAlternate={this._setAlternate} forceUpdate={forceUpdate} />;
+    return (
+      <RecordEdit
+        data={merged}
+        selected={selected}
+        setAlternate={this._setAlternate}
+        forceUpdate={forceUpdate}
+        onUndo={this.props.onUndo}
+      />
+    );
   }
 
   _generateByUid = (data, property) => {

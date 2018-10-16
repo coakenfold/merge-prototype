@@ -1,7 +1,8 @@
 import React, { PureComponent } from "react";
 import { func } from "prop-types";
 import "./RecordEdit.css";
-import dataPropType from "../dataPropType";
+import "../Record/Record.css";
+import dataPropType from "./dataPropType";
 import classNames from "classnames";
 
 class RecordEdit extends PureComponent {
@@ -15,9 +16,9 @@ class RecordEdit extends PureComponent {
   _generateButtons = params => {
     const { s, property, title1, title2, title3, length } = params;
     return (
-      <div className="buttons">
+      <div className="reviewButtons">
         <button
-          className={classNames("button", { active: s === 0 })}
+          className={classNames("reviewButton", { active: s === 0 })}
           onClick={() => {
             this._setAlternate(property, 0);
           }}
@@ -26,7 +27,7 @@ class RecordEdit extends PureComponent {
         </button>
 
         <button
-          className={classNames("button", { active: s === 1 })}
+          className={classNames("reviewButton", { active: s === 1 })}
           onClick={() => {
             this._setAlternate(property, 1);
           }}
@@ -36,7 +37,7 @@ class RecordEdit extends PureComponent {
 
         {length === 3 && (
           <button
-            className={classNames("button", { active: s === 2 })}
+            className={classNames("reviewButton", { active: s === 2 })}
             onClick={() => {
               this._setAlternate(property, 2);
             }}
@@ -52,7 +53,7 @@ class RecordEdit extends PureComponent {
     if (!data) {
       return null;
     }
-    let active = null;
+    let content = null;
     let buttons = null;
     let title1 = "";
     let title2 = "";
@@ -74,7 +75,7 @@ class RecordEdit extends PureComponent {
     }
     switch (property) {
       case "categories":
-        active = (
+        content = (
           <ul>
             {data.categories[s].map((item, index) => (
               <li key={index}>{item["dc:title"]}</li>
@@ -87,7 +88,7 @@ class RecordEdit extends PureComponent {
         }
         break;
       case "sources":
-        active = (
+        content = (
           <ul>
             {data.sources[s].map((item, index) => (
               <li key={index}>{item["dc:title"]}</li>
@@ -100,11 +101,11 @@ class RecordEdit extends PureComponent {
         }
         break;
       case "related_phrases":
-        active = (
+        content = (
           <ul>
             {data.related_phrases[s].map((item, index) => (
               <li key={index}>
-                <strong>{item.phrase}</strong>
+                <h2>{item.phrase}</h2>
                 <ul>
                   {item["fv:definitions"].map((subitem, subindex) => (
                     <li key={subindex}>{subitem.translation}</li>
@@ -120,7 +121,7 @@ class RecordEdit extends PureComponent {
         }
         break;
       case "related_audio":
-        active = (
+        content = (
           <div>
             {data.related_audio[s].map((item, index) => (
               <div key={index}>
@@ -135,7 +136,7 @@ class RecordEdit extends PureComponent {
         // TODO: not supported in prototype
         break;
       case "fv:definitions":
-        active = (
+        content = (
           <ul>
             {data["fv:definitions"][s].map((item, index) => (
               <li key={index}>{item.translation}</li>
@@ -148,7 +149,7 @@ class RecordEdit extends PureComponent {
         }
         break;
       case "fv:cultural_note":
-        active = (
+        content = (
           <ul>
             {data["fv:cultural_note"][s].map((item, index) => (
               <li key={index}>{item}</li>
@@ -164,7 +165,7 @@ class RecordEdit extends PureComponent {
         // noop
         break;
       case "dc:contributors":
-        active = (
+        content = (
           <ul>
             {data["dc:contributors"][s].map((item, index) => (
               <li key={index}>{item}</li>
@@ -178,7 +179,7 @@ class RecordEdit extends PureComponent {
         break;
       default:
         // should be a string
-        active = <div>{d[s]}</div>;
+        content = <div>{d[s]}</div>;
 
         if (dLength > 1) {
           buttons = this._generateButtons({ s, property, title1, title2, title3, length: dLength });
@@ -186,9 +187,9 @@ class RecordEdit extends PureComponent {
         break;
     }
     return (
-      <div className={classNames({ needsReview: dLength > 1 })}>
+      <div className={classNames({ review: dLength > 1 })}>
         {buttons}
-        {active}
+        <div className="reviewContent">{content}</div>
       </div>
     );
   };
@@ -203,41 +204,53 @@ class RecordEdit extends PureComponent {
           <div className="groupPrimary">
             <div className="row">{this._generateContent("related_audio")}</div>
             <div className="row">
-              <strong>Pronunciation:</strong>
+              <h2>Pronunciation:</h2>
               {this._generateContent("fv-word:pronunciation")}
             </div>
             <div className="row">
-              <strong>Part of speech:</strong>
+              <h2>Part of speech:</h2>
               {this._generateContent("part_of_speech")}
             </div>
             <div className="row">
-              <strong>{data["fv:definitions"].length > 1 ? "Definitions" : "Definition"}:</strong>
+              <h2>{data["fv:definitions"].length > 1 ? "Definitions" : "Definition"}:</h2>
               {this._generateContent("fv:definitions")}
             </div>
             <div className="row">
-              <strong>{data.related_phrases.length > 1 ? "Related phrases" : "Related phrase"}:</strong>
+              <h2>{data.related_phrases.length > 1 ? "Related phrases" : "Related phrase"}:</h2>
               {this._generateContent("related_phrases")}
             </div>
             <div className="row">
-              <strong>{data["fv:cultural_note"].length > 1 ? "Cultural notes" : "Cultural note"}:</strong>
+              <h2>{data["fv:cultural_note"].length > 1 ? "Cultural notes" : "Cultural note"}:</h2>
               {this._generateContent("fv:cultural_note")}
             </div>
             <div className="row">
-              <strong>{data.sources.length > 1 ? "Sources" : "Source"}:</strong>
+              <h2>{data.sources.length > 1 ? "Sources" : "Source"}:</h2>
               {this._generateContent("sources")}
             </div>
           </div>
           <aside>
+            <div className="row mergeGroup">
+              <h2>This is the merged record.</h2>
+
+              <p>The highlighted sections indicate changes.</p>
+
+              <div>
+                <h3>You can undo the merge</h3>
+                <button className="btnMergeUndo" onClick={this.props.onUndo}>
+                  Undo
+                </button>
+              </div>
+            </div>
             <div className="row">
-              <strong>{data["dc:contributors"].length > 1 ? "Contributors" : "Contributor"}:</strong>
+              <h2>{data["dc:contributors"].length > 1 ? "Contributors" : "Contributor"}:</h2>
               {this._generateContent("dc:contributors")}
             </div>
             <div className="row">
-              <strong>{data.categories.length > 1 ? "Categories" : "Category"}:</strong>
+              <h2>{data.categories.length > 1 ? "Categories" : "Category"}:</h2>
               {this._generateContent("categories")}
             </div>
             <div className="row">
-              <strong>Reference:</strong>
+              <h2>Reference:</h2>
               {this._generateContent("fv:reference")}
             </div>
           </aside>
