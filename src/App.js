@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import "./App.css";
 
-// import dummyData from "./data/data";
 import axios from "axios";
 import MergeRecords from "./components/MergeRecords/MergeRecords";
 import Record from "./components/Record/Record";
@@ -17,7 +16,6 @@ class App extends Component {
       .get("https://pznmh01oo9.execute-api.ca-central-1.amazonaws.com/dev/test-merge-two-records")
       .then(response => {
         this.setState({ data: response.data });
-        // this.setState({ data: dummyData });
       })
       .catch(error => {
         this.setState({ error });
