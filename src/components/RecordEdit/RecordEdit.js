@@ -4,7 +4,7 @@ import "./RecordEdit.css";
 import dataPropType from "../dataPropType";
 import classNames from "classnames";
 
-class Record extends PureComponent {
+class RecordEdit extends PureComponent {
   static propTypes = {
     setAlternate: func,
     data: dataPropType
@@ -250,4 +250,4 @@ class Record extends PureComponent {
   };
 }
 
-export default Record;
+export default RecordEdit;
