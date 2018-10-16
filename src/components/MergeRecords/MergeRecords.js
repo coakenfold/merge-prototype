@@ -1,14 +1,34 @@
 import React, { PureComponent } from "react";
-
-import "./MergeRecords.css";
 import uuid from "uuid/v4";
 import { arrayOf } from "prop-types";
-import Record from "../Record/Record";
 import dataPropType from "../dataPropType";
+import RecordEdit from "../RecordEdit/RecordEdit";
+import "./MergeRecords.css";
+
 class MergeRecords extends PureComponent {
   state = {
     merged: null,
-    needsReview: []
+    selected: {
+      type: 0,
+      word: 0,
+      part_of_speech: 0,
+      categories: 0,
+      sources: 0,
+      related_phrases: 0,
+      related_audio: 0,
+      related_pictures: 0,
+      lastModified: 0,
+      "fv:reference": 0,
+      "fv:definitions": 0,
+      "fv:cultural_note": 0,
+      "fv:available_in_childrens_archive": 0,
+      "dc:creator": 0,
+      "dc:lastContributor": 0,
+      "dc:contributors": 0,
+      "fv-word:pronunciation": 0,
+      "fv-word:part_of_speech": 0
+    },
+    forceUpdate: null
   };
   static propTypes = {
     data: arrayOf(dataPropType)
@@ -17,11 +37,100 @@ class MergeRecords extends PureComponent {
     this._mergeRecords();
   }
   render() {
-    const { merged, selected, updateFlag } = this.state;
+    const { merged, selected, forceUpdate } = this.state;
     if (!merged) return null;
 
-    return <Record data={merged} selected={selected} setAlternate={this._setAlternate} updateFlag={updateFlag} />;
+    return <RecordEdit data={merged} selected={selected} setAlternate={this._setAlternate} forceUpdate={forceUpdate} />;
   }
+
+  _generateByUid = (data, property) => {
+    let flagged = false;
+    const toReturn = [];
+    const unique = [].concat(data[0][property]);
+    const uniqueUids = unique.map(obj => {
+      return obj.uid;
+    });
+    data[1][property].forEach(obj => {
+      if (uniqueUids.indexOf(obj.uid) === -1) {
+        flagged = true;
+        unique.push(obj);
+      }
+    });
+    toReturn.push(unique);
+    if (flagged) {
+      toReturn.push(data[0][property]);
+      toReturn.push(data[1][property]);
+    }
+    return toReturn;
+  };
+
+  _generateChildrensArchive = data => {
+    const property = "fv:available_in_childrens_archive";
+    const data0 = data[0][property];
+    const data1 = data[1][property];
+
+    return [data0, data1];
+  };
+
+  _generateCombined = (data, property) => {
+    let flagged = false;
+    const toReturn = [];
+    const a = data[0][property];
+    const b = data[1][property];
+    const ab = [].concat(a);
+    b.forEach(entry => {
+      if (ab.indexOf(entry) === -1) {
+        flagged = true;
+        ab.push(entry);
+      }
+    });
+    toReturn.push(ab);
+    if (flagged) {
+      toReturn.push(a);
+      toReturn.push(b);
+    }
+    return toReturn;
+  };
+
+  _generateDefinitions = data => {
+    let flagged = false;
+    const toReturn = [];
+    const property = "fv:definitions";
+    const data0 = data[0][property];
+    const data1 = data[1][property];
+
+    const unique = [].concat(data0);
+    const uniqueMap = unique.map(obj => {
+      return `${obj.translation} ${obj.language}`;
+    });
+
+    data1.forEach(obj => {
+      const str = `${obj.translation} ${obj.language}`;
+      if (uniqueMap.indexOf(str) === -1) {
+        flagged = true;
+        unique.push(obj);
+      }
+    });
+
+    toReturn.push(unique);
+    if (flagged) {
+      toReturn.push(data0);
+      toReturn.push(data1);
+    }
+    return toReturn;
+  };
+
+  _generateDouble = (data, property) => {
+    const data0 = data[0][property];
+    const data1 = data[1][property];
+
+    if (data0 !== data1) {
+      return [data0, data1];
+    }
+
+    return [data0];
+  };
+
   _mergeRecords = () => {
     const { data } = this.props;
     const sorted = this._sortByLastEdited(data);
@@ -67,117 +176,16 @@ class MergeRecords extends PureComponent {
         "dc:contributors": dc_contributors,
         "fv-word:pronunciation": fv_word_pronunciation,
         "fv-word:part_of_speech": fv_word_part_of_speech
-      },
-      selected: {
-        type: 0,
-        word: 0,
-        part_of_speech: 0,
-        categories: 0,
-        sources: 0,
-        related_phrases: 0,
-        related_audio: 0,
-        related_pictures: 0,
-        lastModified: 0,
-        "fv:reference": 0,
-        "fv:definitions": 0,
-        "fv:cultural_note": 0,
-        "fv:available_in_childrens_archive": 0,
-        "dc:creator": 0,
-        "dc:lastContributor": 0,
-        "dc:contributors": 0,
-        "fv-word:pronunciation": 0,
-        "fv-word:part_of_speech": 0
       }
     });
   };
 
-  _generateChildrensArchive = data => {
-    const property = "fv:available_in_childrens_archive";
-    const data0 = data[0][property];
-    const data1 = data[1][property];
-
-    return [data0, data1];
+  _setAlternate = (property, data) => {
+    const { selected } = this.state;
+    selected[property] = data;
+    this.setState({ selected, forceUpdate: uuid() });
   };
 
-  _generateDouble = (data, property) => {
-    const data0 = data[0][property];
-    const data1 = data[1][property];
-
-    if (data0 !== data1) {
-      return [data0, data1];
-    }
-
-    return [data0];
-  };
-
-  _generateByUid = (data, property) => {
-    let flagged = false;
-    const toReturn = [];
-    const unique = [].concat(data[0][property]);
-    const uniqueUids = unique.map(obj => {
-      return obj.uid;
-    });
-    data[1][property].forEach(obj => {
-      if (uniqueUids.indexOf(obj.uid) === -1) {
-        flagged = true;
-        unique.push(obj);
-      }
-    });
-    toReturn.push(unique);
-    if (flagged) {
-      toReturn.push(data[0][property]);
-      toReturn.push(data[1][property]);
-    }
-    return toReturn;
-  };
-
-  _generateDefinitions = data => {
-    let flagged = false;
-    const toReturn = [];
-    const property = "fv:definitions";
-    const data0 = data[0][property];
-    const data1 = data[1][property];
-
-    const unique = [].concat(data0);
-    const uniqueMap = unique.map(obj => {
-      return `${obj.translation} ${obj.language}`;
-    });
-
-    data1.forEach(obj => {
-      const str = `${obj.translation} ${obj.language}`;
-      if (uniqueMap.indexOf(str) === -1) {
-        flagged = true;
-        unique.push(obj);
-      }
-    });
-
-    toReturn.push(unique);
-    if (flagged) {
-      toReturn.push(data0);
-      toReturn.push(data1);
-    }
-    return toReturn;
-  };
-
-  _generateCombined = (data, property) => {
-    let flagged = false;
-    const toReturn = [];
-    const a = data[0][property];
-    const b = data[1][property];
-    const ab = [].concat(a);
-    b.forEach(entry => {
-      if (ab.indexOf(entry) === -1) {
-        flagged = true;
-        ab.push(entry);
-      }
-    });
-    toReturn.push(ab);
-    if (flagged) {
-      toReturn.push(a);
-      toReturn.push(b);
-    }
-    return toReturn;
-  };
   _sortByLastEdited = data => {
     const sorting = [].concat(data);
     return sorting.sort((a, b) => {
@@ -191,12 +199,6 @@ class MergeRecords extends PureComponent {
       }
       return 0;
     });
-  };
-
-  _setAlternate = (property, data) => {
-    const { selected } = this.state;
-    selected[property] = data;
-    this.setState({ selected, updateFlag: uuid() });
   };
 }
 

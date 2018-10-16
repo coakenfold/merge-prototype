@@ -4,6 +4,8 @@ import "./App.css";
 // import dummyData from "./data/data";
 import axios from "axios";
 import MergeRecords from "./components/MergeRecords/MergeRecords";
+// import Record from "./components/Record/Record";
+
 class App extends Component {
   state = {
     data: null,
@@ -28,6 +30,7 @@ class App extends Component {
     }
     if (data) {
       content = <MergeRecords data={data} />;
+      // content = <Record data={data} />;
     }
     return <div className="App">{content}</div>;
   }

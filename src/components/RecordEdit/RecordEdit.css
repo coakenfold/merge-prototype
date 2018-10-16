@@ -1,0 +1,40 @@
+/* A
+==================== */
+.active {
+    text-decoration: underline;
+}
+/* B
+==================== */
+.buttons {
+    display: flex;
+}
+.button {
+    border: none;
+    margin: 0;
+    background-color: inherit;
+}
+/* R
+==================== */
+.Record {
+    margin: 20px;
+}
+.recordGroup {
+    display: flex;
+}
+.row {
+    margin-bottom: 20px;
+}
+/* G
+==================== */
+.groupPrimary {
+    width: 50%;
+    margin-right: 20px;
+}
+/* N
+==================== */
+.needsReview {
+    background-color: yellow;
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+}
